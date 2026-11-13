@@ -17,7 +17,6 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { margin: 0; background: var(--bg); color: #1e293b; }
         
-        /* Navbar */
         .navbar {
             background: var(--secondary); color: white; padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
@@ -33,11 +32,10 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Cards & Forms */
         .card { background: var(--card); border-radius: 10px; padding: 18px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 18px; }
-        .card h2 { margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--primary); font-size: 1.2rem; }
+        .card h2 { margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--primary); font-size: 1.15rem; }
         
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 15px; }
         
         label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.88rem; }
@@ -47,7 +45,7 @@
         
         .btn {
             padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem;
-            transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+            transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: #1d4ed8; }
@@ -67,7 +65,6 @@
         .timer-badge {
             position: absolute; top: 15px; right: 15px; background: #ef4444; color: white;
             padding: 6px 12px; border-radius: 20px; font-weight: 800; font-size: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         .category-badge {
             background: var(--accent); color: #000; padding: 5px 15px; border-radius: 20px;
@@ -86,8 +83,6 @@
             vertical-align: middle; margin-right: 6px; border: 1px solid #94a3b8;
         }
         .player-name { font-size: 1.9rem; margin: 6px 0; font-weight: 800; }
-        .spinning-text { color: #fde047; animation: pulse 0.2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
 
         .bid-box {
             background: rgba(255,255,255,0.12); border-radius: 10px; padding: 12px; margin: 12px 0;
@@ -112,216 +107,282 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 9px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 0.9rem; }
         th { background: #f8fafc; }
+
+        /* Player Self-Registration View */
+        .reg-container {
+            max-width: 480px; margin: 30px auto; padding: 15px;
+        }
+        .reg-card {
+            background: white; border-radius: 14px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-top: 6px solid var(--primary);
+        }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <h1 id="displayTournamentName">🏏 Cricket Premier League</h1>
-    <div class="nav-tabs">
-        <button class="active" onclick="switchTab('auctionTab', this)">🔴 Live Auction</button>
-        <button onclick="switchTab('playersTab', this)">🏃 Players</button>
-        <button onclick="switchTab('teamsTab', this)">🛡️ Teams</button>
-        <button onclick="switchTab('settingsTab', this)">⚙️ Settings</button>
+<!-- SELF REGISTRATION VIEW (When opened with ?register=1) -->
+<div id="playerSelfRegView" style="display:none;">
+    <div class="reg-container">
+        <div class="reg-card">
+            <h2 style="text-align:center; color:var(--primary); margin-top:0;" id="regTourTitle">🏏 Player Registration</h2>
+            <p style="text-align:center; color:#64748b; font-size:0.9rem;">Tamari vigat bhari ne niche Submit dabavo.</p>
+            
+            <div style="margin-bottom:12px;">
+                <label>Tamaro Puru Naam (Full Name) *</label>
+                <input type="text" id="selfName" placeholder="Ex. Dhaval Patel">
+            </div>
+            <div style="margin-bottom:12px;">
+                <label>Tamari Category Pasand Karo *</label>
+                <select id="selfCategory">
+                    <option value="All-Rounder">All-Rounder</option>
+                    <option value="Batsman">Batsman</option>
+                    <option value="Bowler">Bowler</option>
+                    <option value="Fielder">Fielder</option>
+                </select>
+            </div>
+            <div style="margin-bottom:15px;">
+                <label>Tamaro Photo (Optional - Gallery mathi)</label>
+                <input type="file" id="selfPhoto" accept="image/*">
+            </div>
+            <button class="btn btn-whatsapp" style="width:100%; font-size:1.05rem; padding:12px;" onclick="submitSelfRegistration()">
+                📲 Submit & Send to Organizer
+            </button>
+            <p style="font-size:0.78rem; color:#64748b; text-align:center; margin-top:12px;">
+                Submit dabavta j WhatsApp khulshe, tya organizer ne message send kari do.
+            </p>
+        </div>
     </div>
 </div>
 
-<div class="container">
+<!-- MAIN ORGANIZER APP VIEW -->
+<div id="mainAppView">
+    <div class="navbar">
+        <h1 id="displayTournamentName">🏏 Cricket Premier League</h1>
+        <div class="nav-tabs">
+            <button class="active" onclick="switchTab('auctionTab', this)">🔴 Live Auction</button>
+            <button onclick="switchTab('playersTab', this)">🏃 Players</button>
+            <button onclick="switchTab('teamsTab', this)">🛡️ Teams</button>
+            <button onclick="switchTab('settingsTab', this)">⚙️ Settings</button>
+        </div>
+    </div>
 
-    <!-- 1. LIVE AUCTION TAB -->
-    <div id="auctionTab" class="tab-content active">
-        <div class="auction-stage">
-            <!-- Player Card -->
-            <div class="player-spotlight">
-                <div class="timer-badge" id="timerDisplay" style="display:none;">⏱️ 20s</div>
-                <div class="category-badge" id="aucCategory">READY</div>
-                <img id="aucPlayerPhoto" class="player-avatar-large" src="" alt="Player Photo">
-                <div class="player-name" id="aucPlayerName">Spin Next Player</div>
-                <div>Base Price: <strong id="aucBasePrice">500</strong> Pts</div>
+    <div class="container">
 
-                <div class="bid-box">
-                    <div style="font-size: 0.85rem; text-transform: uppercase;">Current Bid</div>
-                    <div class="current-bid" id="aucCurrentBid">0</div>
-                    <div class="holding-team" id="aucHoldingTeam">No Bids Yet</div>
+        <!-- 1. LIVE AUCTION TAB -->
+        <div id="auctionTab" class="tab-content active">
+            <div class="auction-stage">
+                <div class="player-spotlight">
+                    <div class="timer-badge" id="timerDisplay" style="display:none;">⏱️ 20s</div>
+                    <div class="category-badge" id="aucCategory">READY</div>
+                    <img id="aucPlayerPhoto" class="player-avatar-large" src="" alt="Player Photo">
+                    <div class="player-name" id="aucPlayerName">Click Next Player</div>
+                    <div>Base Price: <strong id="aucBasePrice">500</strong> Pts</div>
+
+                    <div class="bid-box">
+                        <div style="font-size: 0.85rem; text-transform: uppercase;">Current Bid</div>
+                        <div class="current-bid" id="aucCurrentBid">0</div>
+                        <div class="holding-team" id="aucHoldingTeam">No Bids Yet</div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn-success" onclick="markSold()" id="btnSold" disabled>✅ SOLD</button>
+                        <button class="btn btn-danger" onclick="markUnsold()" id="btnUnsold" disabled>❌ UNSOLD</button>
+                        <button class="btn btn-accent" onclick="resetCurrentBid()" id="btnResetBid" disabled>↩️ Reset</button>
+                        <button class="btn btn-primary" onclick="nextPlayer()" id="btnNext">⏭️ Next Player</button>
+                    </div>
                 </div>
 
-                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn btn-success" onclick="markSold()" id="btnSold" disabled>✅ SOLD</button>
-                    <button class="btn btn-danger" onclick="markUnsold()" id="btnUnsold" disabled>❌ UNSOLD</button>
-                    <button class="btn btn-accent" onclick="resetCurrentBid()" id="btnResetBid" disabled>↩️ Reset</button>
-                    <button class="btn btn-primary" onclick="spinNextPlayer()" id="btnSpin">🎰 Spin Player</button>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                        <h2 style="margin:0; border:none;">Click Team to Bid</h2>
+                        <span style="background:#e0e7ff; color:#1e3a8a; padding:5px 10px; border-radius:6px; font-weight:bold; font-size: 0.9rem;">
+                            Next: +<span id="nextIncDisplay">200</span>
+                        </span>
+                    </div>
+                    <div class="team-bid-grid" id="teamBidButtons"></div>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 12px;">
+                        * Max Bid automatically reserves base price for remaining required squad slots.
+                    </p>
                 </div>
             </div>
+        </div>
 
-            <!-- Bidding Controls -->
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                    <h2 style="margin:0; border:none;">Click Team to Bid</h2>
-                    <span style="background:#e0e7ff; color:#1e3a8a; padding:5px 10px; border-radius:6px; font-weight:bold; font-size: 0.9rem;">
-                        Next: +<span id="nextIncDisplay">200</span>
-                    </span>
-                </div>
-                <div class="team-bid-grid" id="teamBidButtons"></div>
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 12px;">
-                    * Max Bid automatically reserves base price for remaining required squad slots.
+        <!-- 2. PLAYERS & REGISTRATION LINK TAB -->
+        <div id="playersTab" class="tab-content">
+            
+            <!-- Shareable Player Registration Link Box -->
+            <div class="card" style="border-left: 5px solid #25D366; background: #f0fdf4;">
+                <h2 style="color: #15803d; border-color: #bbf7d0;">📲 Player Registration Link (Kheladiyo ne Add Thava Link Moklo)</h2>
+                <p style="font-size: 0.88rem; color: #334155; margin-top: 0;">
+                    Aa link WhatsApp group ma moklo. Kheladiyo link kholi ne potanu naam, category ane photo bhari ne submit karshe!
                 </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. PLAYERS & CAPTAINS TAB -->
-    <div id="playersTab" class="tab-content">
-        <div class="grid-2">
-            <!-- Single Player Add -->
-            <div class="card">
-                <h2>Add Single Player / Captain</h2>
-                <div style="margin-bottom: 10px;">
-                    <label>Player Name</label>
-                    <input type="text" id="pName" placeholder="Ex. Virat Patel">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                    <input type="text" id="regShareUrl" readonly style="flex:1; min-width: 220px; background: white;">
+                    <button class="btn btn-primary" onclick="copyRegLink()">📋 Copy Link</button>
+                    <button class="btn btn-whatsapp" onclick="shareRegLinkWhatsApp()">📲 Share on WhatsApp</button>
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <label>Player Photo (Gallery માંથી)</label>
-                    <input type="file" id="pPhoto" accept="image/*" style="padding: 6px;">
-                </div>
-                <div style="margin-bottom: 10px;">
-                    <label>Category (Order: All-Rounder > Bat > Bowl > Field)</label>
-                    <select id="pCategory">
-                        <option value="All-Rounder">1. All-Rounder</option>
-                        <option value="Batsman">2. Batsman</option>
-                        <option value="Bowler">3. Bowler</option>
-                        <option value="Fielder">4. Fielder</option>
-                    </select>
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <label>Assign Directly as Captain/Icon? (Optional)</label>
-                    <select id="pCaptainTeam">
-                        <option value="">No (Put in Auction)</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="addPlayer()">+ Add Player</button>
-            </div>
-
-            <!-- Bulk Player Add -->
-            <div class="card">
-                <h2>📋 Bulk Add Players (WhatsApp Copy-Paste)</h2>
-                <p style="font-size: 0.85rem; color: #475569; margin-top: 0;">
-                    એક લાઈનમાં એક નામ લખો (દા.ત. <code>Hardik Patel, All-Rounder</code> અથવા ફક્ત નામ લખો):
-                </p>
-                <textarea id="bulkPlayersInput" rows="6" placeholder="Hardik Patel, All-Rounder&#10;Rohit Sharma, Batsman&#10;Jasprit Bumrah, Bowler&#10;Ravindra Jadeja, Fielder"></textarea>
-                <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
-                    <select id="bulkDefaultCat" style="width: auto;">
-                        <option value="All-Rounder">Default: All-Rounder</option>
-                        <option value="Batsman">Default: Batsman</option>
-                        <option value="Bowler">Default: Bowler</option>
-                        <option value="Fielder">Default: Fielder</option>
-                    </select>
-                    <button class="btn btn-success" onclick="bulkAddPlayers()">+ Add All Players</button>
+                
+                <div style="border-top: 1px dashed #86efac; padding-top: 10px;">
+                    <label style="color: #166534;">📥 WhatsApp par kheladiyo e moklela Registration Message niche Paste karo:</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <textarea id="importRegText" rows="2" placeholder="WhatsApp par aavelo player registration message ahiya paste karo..." style="flex:1;"></textarea>
+                        <button class="btn btn-success" onclick="importFromRegMessage()">+ Add Player</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h2>Player List (<span id="totalPlayersCount">0</span>)</h2>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>Category</th>
-                            <th>Status</th>
-                            <th>Team / Price</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="playerListTable"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. TEAMS & SQUADS TAB -->
-    <div id="teamsTab" class="tab-content">
-        <div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
-            <button class="btn btn-whatsapp" onclick="shareAllTeamsWhatsApp()">📲 Share All Teams on WhatsApp</button>
-        </div>
-        <div class="grid-2" id="teamSquadCards"></div>
-    </div>
-
-    <!-- 4. SETTINGS & RULES TAB -->
-    <div id="settingsTab" class="tab-content">
-        <div class="card">
-            <h2>1. Tournament, Timer & Squad Rules</h2>
-            <div class="grid-3">
-                <div>
-                    <label>Tournament Name</label>
-                    <input type="text" id="setTourName" value="Cricket Premier League">
-                </div>
-                <div>
-                    <label>Number of Teams (3 to 10)</label>
-                    <input type="number" id="setTeamCount" min="3" max="10" value="4" onchange="renderTeamInputs()">
-                </div>
-                <div>
-                    <label>Team Budget / Purse</label>
-                    <input type="number" id="setPurse" min="10000" max="500000" step="5000" value="100000">
-                </div>
-                <div>
-                    <label>Min Players per Team (5 to 20)</label>
-                    <input type="number" id="setMinPlayers" min="5" max="20" value="11">
-                </div>
-                <div>
-                    <label>Max Players per Team (5 to 20)</label>
-                    <input type="number" id="setMaxPlayers" min="5" max="20" value="15">
-                </div>
-                <div>
-                    <label>Default Base Price</label>
-                    <input type="number" id="setBasePrice" value="500">
-                </div>
-                <div>
-                    <label>Bid Timer (Seconds, 0 = Off)</label>
-                    <input type="number" id="setTimerSec" min="0" max="120" value="20">
-                </div>
-                <div>
-                    <label>Sound Effects</label>
-                    <select id="setSoundEnabled">
-                        <option value="true">🔊 ON (Sound ચાલુ)</option>
-                        <option value="false">🔇 OFF (Sound બંધ)</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>2. Team Names & Logos</h2>
-            <div class="grid-2" id="teamNameInputs"></div>
-        </div>
-
-        <div class="card">
-            <h2>3. Bid Increment Slabs</h2>
             <div class="grid-2">
-                <div>
-                    <label>500 to 2,000 Increment (+)</label>
-                    <input type="number" id="inc1" value="200">
+                <!-- Single Player Add -->
+                <div class="card">
+                    <h2>Add Single Player / Captain</h2>
+                    <div style="margin-bottom: 10px;">
+                        <label>Player Name</label>
+                        <input type="text" id="pName" placeholder="Ex. Virat Patel">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label>Player Photo (Gallery mathi)</label>
+                        <input type="file" id="pPhoto" accept="image/*" style="padding: 6px;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label>Category (Order: All-Rounder > Bat > Bowl > Field)</label>
+                        <select id="pCategory">
+                            <option value="All-Rounder">1. All-Rounder</option>
+                            <option value="Batsman">2. Batsman</option>
+                            <option value="Bowler">3. Bowler</option>
+                            <option value="Fielder">4. Fielder</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label>Assign Directly as Captain/Icon? (Optional)</label>
+                        <select id="pCaptainTeam">
+                            <option value="">No (Put in Auction)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="addPlayer()">+ Add Player</button>
                 </div>
-                <div>
-                    <label>2,001 to 5,000 Increment (+)</label>
-                    <input type="number" id="inc2" value="300">
-                </div>
-                <div>
-                    <label>5,001 to 15,000 Increment (+)</label>
-                    <input type="number" id="inc3" value="500">
-                </div>
-                <div>
-                    <label>Above 15,000 Increment (+)</label>
-                    <input type="number" id="inc4" value="2000">
+
+                <!-- Bulk Player Add -->
+                <div class="card">
+                    <h2>📋 Bulk Add Players (List Copy-Paste)</h2>
+                    <p style="font-size: 0.85rem; color: #475569; margin-top: 0;">
+                        Ek line ma ek naam lakho (Ex. <code>Hardik Patel, All-Rounder</code>):
+                    </p>
+                    <textarea id="bulkPlayersInput" rows="6" placeholder="Hardik Patel, All-Rounder&#10;Rohit Sharma, Batsman&#10;Jasprit Bumrah, Bowler&#10;Ravindra Jadeja, Fielder"></textarea>
+                    <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                        <select id="bulkDefaultCat" style="width: auto;">
+                            <option value="All-Rounder">Default: All-Rounder</option>
+                            <option value="Batsman">Default: Batsman</option>
+                            <option value="Bowler">Default: Bowler</option>
+                            <option value="Fielder">Default: Fielder</option>
+                        </select>
+                        <button class="btn btn-success" onclick="bulkAddPlayers()">+ Add All</button>
+                    </div>
                 </div>
             </div>
-            <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn btn-success" onclick="saveSettings()">💾 Save & Apply Settings</button>
-                <button class="btn btn-danger" onclick="resetAllData()">⚠️ Reset All Auction Data</button>
+
+            <div class="card">
+                <h2>Player List (<span id="totalPlayersCount">0</span>)</h2>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Team / Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playerListTable"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
+        <!-- 3. TEAMS & SQUADS TAB -->
+        <div id="teamsTab" class="tab-content">
+            <div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
+                <button class="btn btn-whatsapp" onclick="shareAllTeamsWhatsApp()">📲 Share All Teams on WhatsApp</button>
+            </div>
+            <div class="grid-2" id="teamSquadCards"></div>
+        </div>
+
+        <!-- 4. SETTINGS & RULES TAB -->
+        <div id="settingsTab" class="tab-content">
+            <div class="card">
+                <h2>1. Tournament, Timer & Squad Rules</h2>
+                <div class="grid-3">
+                    <div>
+                        <label>Tournament Name</label>
+                        <input type="text" id="setTourName" value="Cricket Premier League">
+                    </div>
+                    <div>
+                        <label>Number of Teams (3 to 10)</label>
+                        <input type="number" id="setTeamCount" min="3" max="10" value="4" onchange="renderTeamInputs()">
+                    </div>
+                    <div>
+                        <label>Team Budget / Purse</label>
+                        <input type="number" id="setPurse" min="10000" max="500000" step="5000" value="100000">
+                    </div>
+                    <div>
+                        <label>Min Players per Team (5 to 20)</label>
+                        <input type="number" id="setMinPlayers" min="5" max="20" value="11">
+                    </div>
+                    <div>
+                        <label>Max Players per Team (5 to 20)</label>
+                        <input type="number" id="setMaxPlayers" min="5" max="20" value="15">
+                    </div>
+                    <div>
+                        <label>Default Base Price</label>
+                        <input type="number" id="setBasePrice" value="500">
+                    </div>
+                    <div>
+                        <label>Bid Timer (Seconds, 0 = Off)</label>
+                        <input type="number" id="setTimerSec" min="0" max="120" value="20">
+                    </div>
+                    <div>
+                        <label>Sound Effects</label>
+                        <select id="setSoundEnabled">
+                            <option value="true">🔊 ON (Sound Chalu)</option>
+                            <option value="false">🔇 OFF (Sound Bandh)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>2. Team Names & Logos</h2>
+                <div class="grid-2" id="teamNameInputs"></div>
+            </div>
+
+            <div class="card">
+                <h2>3. Bid Increment Slabs</h2>
+                <div class="grid-2">
+                    <div>
+                        <label>500 to 2,000 Increment (+)</label>
+                        <input type="number" id="inc1" value="200">
+                    </div>
+                    <div>
+                        <label>2,001 to 5,000 Increment (+)</label>
+                        <input type="number" id="inc2" value="300">
+                    </div>
+                    <div>
+                        <label>5,001 to 15,000 Increment (+)</label>
+                        <input type="number" id="inc3" value="500">
+                    </div>
+                    <div>
+                        <label>Above 15,000 Increment (+)</label>
+                        <input type="number" id="inc4" value="2000">
+                    </div>
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="saveSettings()">💾 Save & Apply Settings</button>
+                    <button class="btn btn-danger" onclick="resetAllData()">⚠️ Reset All Auction Data</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
@@ -354,19 +415,141 @@
         currentBidderId: null
     };
 
-    if(localStorage.getItem('cricketAuctionProV3')) {
-        state = JSON.parse(localStorage.getItem('cricketAuctionProV3'));
+    if(localStorage.getItem('cricketAuctionProV4')) {
+        state = JSON.parse(localStorage.getItem('cricketAuctionProV4'));
+    }
+
+    // Check URL parameters for Self Registration Mode or Direct Add Link
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('register') === '1') {
+        document.getElementById('mainAppView').style.display = 'none';
+        document.getElementById('playerSelfRegView').style.display = 'block';
+        if (urlParams.get('tour')) {
+            document.getElementById('regTourTitle').innerText = "🏏 " + decodeURIComponent(urlParams.get('tour'));
+        }
+    } else if (urlParams.get('addp')) {
+        // Auto-import player if opened via direct add link
+        try {
+            const pData = JSON.parse(decodeURIComponent(atob(urlParams.get('addp'))));
+            if (pData && pData.n) {
+                state.players.push({
+                    id: Date.now(),
+                    name: pData.n,
+                    category: pData.c || "All-Rounder",
+                    status: "AVAILABLE",
+                    teamId: null,
+                    price: 0,
+                    isCaptain: false,
+                    photo: pData.p || ""
+                });
+                saveData();
+                alert(`✅ Player "${pData.n}" (${pData.c}) successfully added to Auction!`);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        } catch(e) {}
     }
 
     function saveData() {
         try {
-            localStorage.setItem('cricketAuctionProV3', JSON.stringify(state));
+            localStorage.setItem('cricketAuctionProV4', JSON.stringify(state));
         } catch (e) {
             alert("Storage full! Please use smaller photo sizes.");
         }
     }
 
-    // Built-in Offline Sound Synthesizer (Web Audio API)
+    // Self Registration Submission (Player Side)
+    function submitSelfRegistration() {
+        const name = document.getElementById('selfName').value.trim();
+        const cat = document.getElementById('selfCategory').value;
+        const photoInput = document.getElementById('selfPhoto');
+        if (!name) return alert("Kripa karine tamaro naam lakho!");
+
+        const baseUrl = window.location.origin + window.location.pathname;
+        const sendToOrganizer = (photoData) => {
+            const payload = btoa(encodeURIComponent(JSON.stringify({ n: name, c: cat, p: photoData })));
+            const directAddLink = `${baseUrl}?addp=${payload}`;
+            const msg = `🏏 *New Player Registration*\n👤 Name: *${name}*\n🎯 Category: *${cat}*\n\n👇 *Organizer Click to Add Directly:*\n${directAddLink}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        if (photoInput.files && photoInput.files[0]) {
+            compressImage(photoInput.files[0], 110, sendToOrganizer);
+        } else {
+            sendToOrganizer("");
+        }
+    }
+
+    // Registration Link Helpers (Organizer Side)
+    function getRegistrationUrl() {
+        const baseUrl = window.location.origin + window.location.pathname;
+        return `${baseUrl}?register=1&tour=${encodeURIComponent(state.tournamentName)}`;
+    }
+
+    function copyRegLink() {
+        const link = getRegistrationUrl();
+        navigator.clipboard.writeText(link).then(() => {
+            alert("✅ Registration Link Copied! Have WhatsApp group ma Paste karine mokli do.");
+        });
+    }
+
+    function shareRegLinkWhatsApp() {
+        const link = getRegistrationUrl();
+        const msg = `🏏 *${state.tournamentName} - Player Registration* 🏏\n\nAuction ma bhag leva mate niche aapeli link kholi ne tamaro Naam, Category ane Photo submit karo:\n👉 ${link}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function importFromRegMessage() {
+        const raw = document.getElementById('importRegText').value.trim();
+        if (!raw) return alert("Pehla WhatsApp par aavelo message ahiya Paste karo!");
+
+        // Try extracting ?addp= payload first
+        const match = raw.match(/\?addp=([A-Za-z0-9+/=]+)/);
+        if (match && match[1]) {
+            try {
+                const pData = JSON.parse(decodeURIComponent(atob(match[1])));
+                state.players.push({
+                    id: Date.now(),
+                    name: pData.n,
+                    category: pData.c || "All-Rounder",
+                    status: "AVAILABLE",
+                    teamId: null,
+                    price: 0,
+                    isCaptain: false,
+                    photo: pData.p || ""
+                });
+                document.getElementById('importRegText').value = "";
+                saveData();
+                refreshUI();
+                return alert(`✅ "${pData.n}" (${pData.c}) Photo sathe Add thai gaya chhe!`);
+            } catch(e) {}
+        }
+
+        // Fallback text parsing if user just typed Name & Category
+        const nameMatch = raw.match(/Name:\s*\*?([^\n\*]+)\*?/i);
+        const catMatch = raw.match(/Category:\s*\*?([^\n\*]+)\*?/i);
+        if (nameMatch) {
+            const pName = nameMatch[1].trim();
+            const pCat = catMatch ? catMatch[1].trim() : "All-Rounder";
+            state.players.push({
+                id: Date.now(),
+                name: pName,
+                category: ["All-Rounder", "Batsman", "Bowler", "Fielder"].includes(pCat) ? pCat : "All-Rounder",
+                status: "AVAILABLE",
+                teamId: null,
+                price: 0,
+                isCaptain: false,
+                photo: ""
+            });
+            document.getElementById('importRegText').value = "";
+            saveData();
+            refreshUI();
+            return alert(`✅ "${pName}" Add thai gaya chhe!`);
+        }
+
+        alert("Valid registration message nathi malyo. Aakho WhatsApp message copy karine paste karo.");
+    }
+
+    // Sound Synthesizer
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playSound(type) {
         if (!state.soundEnabled) return;
@@ -383,17 +566,7 @@
             gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(now); osc.stop(now + 0.12);
-        } else if (type === 'spin') {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(300 + Math.random()*300, now);
-            gain.gain.setValueAtTime(0.15, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(now); osc.stop(now + 0.05);
         } else if (type === 'sold') {
-            // Hammer thud + celebration chord
             [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
@@ -417,7 +590,7 @@
         }
     }
 
-    // Countdown Timer Logic
+    // Countdown Timer
     let timerInterval = null;
     let timeLeft = 0;
 
@@ -467,64 +640,34 @@
         return Number(state.slabs.s4);
     }
 
-    // Random Player Spinner within current highest priority category
-    let isSpinning = false;
-    function spinNextPlayer() {
-        if (isSpinning) return;
+    // Direct Next Player (Category Priority: All-Rounder -> Batsman -> Bowler -> Fielder)
+    function nextPlayer() {
         let available = state.players.filter(p => p.status === "AVAILABLE");
         if (available.length === 0) {
             let unsold = state.players.filter(p => p.status === "UNSOLD");
-            if (unsold.length > 0 && confirm("All available players done! Bring UNSOLD players back into auction?")) {
+            if (unsold.length > 0 && confirm("Badha available players pura thai gaya chhe! UNSOLD players ne fari thi auction ma lavva chhe?")) {
                 unsold.forEach(p => p.status = "AVAILABLE");
                 saveData();
-                return spinNextPlayer();
+                return nextPlayer();
             }
-            alert("No more players left in the auction list!");
+            alert("List ma koi player baki nathi!");
             state.currentPlayerId = null;
             stopTimer();
             refreshUI();
             return;
         }
 
-        // Find highest priority category available (All-Rounder -> Batsman -> Bowler -> Fielder)
         available.sort((a, b) => categoryOrder[a.category] - categoryOrder[b.category]);
-        let currentTopCategory = available[0].category;
-        let pool = available.filter(p => p.category === currentTopCategory);
-
-        isSpinning = true;
-        document.getElementById('btnSpin').disabled = true;
-        const nameEl = document.getElementById('aucPlayerName');
-        const catEl = document.getElementById('aucCategory');
-        nameEl.classList.add('spinning-text');
-        catEl.innerText = `SPINNING: ${currentTopCategory}`;
-
-        let spins = 0;
-        let maxSpins = 15;
-        let spinInterval = setInterval(() => {
-            let randP = pool[Math.floor(Math.random() * pool.length)];
-            nameEl.innerText = randP.name;
-            document.getElementById('aucPlayerPhoto').src = randP.photo || defaultAvatar;
-            playSound('spin');
-            spins++;
-            if (spins >= maxSpins) {
-                clearInterval(spinInterval);
-                nameEl.classList.remove('spinning-text');
-                isSpinning = false;
-                document.getElementById('btnSpin').disabled = false;
-
-                let chosen = pool[Math.floor(Math.random() * pool.length)];
-                state.currentPlayerId = chosen.id;
-                state.currentBid = 0;
-                state.currentBidderId = null;
-                saveData();
-                refreshUI();
-                startTimer();
-            }
-        }, 80);
+        state.currentPlayerId = available[0].id;
+        state.currentBid = 0;
+        state.currentBidderId = null;
+        saveData();
+        refreshUI();
+        startTimer();
     }
 
     function placeBid(teamId) {
-        if (!state.currentPlayerId || isSpinning) return;
+        if (!state.currentPlayerId) return;
         let nextBid = state.currentBid === 0 ? Number(state.basePrice) : state.currentBid + getIncrement(state.currentBid);
         state.currentBid = nextBid;
         state.currentBidderId = teamId;
@@ -591,7 +734,7 @@
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                callback(canvas.toDataURL('image/jpeg', 0.7));
+                callback(canvas.toDataURL('image/jpeg', 0.65));
             };
             img.src = event.target.result;
         };
@@ -624,7 +767,7 @@
         };
 
         if (photoInput.files && photoInput.files[0]) {
-            compressImage(photoInput.files[0], 220, savePlayerObj);
+            compressImage(photoInput.files[0], 200, savePlayerObj);
         } else {
             savePlayerObj("");
         }
@@ -638,7 +781,7 @@
         let lines = raw.split('\n');
         let added = 0;
         lines.forEach((line, i) => {
-            let cleanLine = line.replace(/^\d+[\.\)\-\s]+/, '').trim(); // Remove numbering like "1. "
+            let cleanLine = line.replace(/^\d+[\.\)\-\s]+/, '').trim();
             if (!cleanLine) return;
             let parts = cleanLine.split(',');
             let name = parts[0].trim();
@@ -785,13 +928,16 @@
 
     function resetAllData() {
         if (confirm("Are you sure? This will reset all sold players and team budgets!")) {
-            localStorage.removeItem('cricketAuctionProV3');
+            localStorage.removeItem('cricketAuctionProV4');
             location.reload();
         }
     }
 
     function refreshUI() {
         document.getElementById('displayTournamentName').innerText = "🏏 " + state.tournamentName;
+        if (document.getElementById('regShareUrl')) {
+            document.getElementById('regShareUrl').value = getRegistrationUrl();
+        }
 
         let currentP = state.players.find(p => p.id === state.currentPlayerId);
         let nextBidAmount = state.currentBid === 0 ? Number(state.basePrice) : state.currentBid + getIncrement(state.currentBid);
@@ -816,7 +962,7 @@
         } else {
             document.getElementById('aucCategory').innerText = "READY";
             document.getElementById('aucPlayerPhoto').src = defaultAvatar;
-            document.getElementById('aucPlayerName').innerText = "Spin Next Player";
+            document.getElementById('aucPlayerName').innerText = "Click Next Player";
             document.getElementById('aucCurrentBid').innerText = "0";
             document.getElementById('aucHoldingTeam').innerText = "-";
             document.getElementById('btnSold').disabled = true;
